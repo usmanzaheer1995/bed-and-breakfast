@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/config"
+	"github.com/usmanzaheer1995/bed-and-breakfast/internal/forms"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/models"
 	"log"
 	"net/http"
@@ -91,7 +92,13 @@ func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
+
+func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
