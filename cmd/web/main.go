@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/config"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/handlers"
+	"github.com/usmanzaheer1995/bed-and-breakfast/internal/models"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/render"
 	"log"
 	"net/http"
@@ -17,6 +19,8 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 func main() {
+	// what am I going to put in the session
+	gob.Register(models.Reservation{})
 
 	// TODO: change this to true when in production
 	app.InProduction = false
