@@ -6,3 +6,6 @@ This is the repository for my bed and breakfast project.
 - Uses [chi](https://github.com/go-chi/chi/v5) router
 - Uses [scs](https://github.com/alexedwards/scs/v2) for session management
 - Uses [nosurf](https://github.com/justinas/nosurf) for CSRF 
+
+## Testing
+- ` go test -coverprofile=coverage.out && go tool cover -html=coverage.out`

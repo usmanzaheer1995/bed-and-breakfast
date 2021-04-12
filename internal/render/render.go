@@ -15,6 +15,7 @@ import (
 var functions = template.FuncMap{}
 
 var app *config.AppConfig
+var pathToTemplates = "./templates"
 
 // NewTemplates sets the config for the templates package
 func NewTemplates(a *config.AppConfig) {
@@ -59,7 +60,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	// this gets a list of all files ending with page.tmpl, and stores
 	// it in a slice of strings called pages
-	pages, err := filepath.Glob("./templates/*.page.tmpl")
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplates))
 	if err != nil {
 		return myCache, err
 	}
@@ -78,7 +79,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		// end with layout.tmpl. THere is only one, but if there were more
 		// than one, we we get them all and store them in a slice of strings
 		// named matches
-		matches, err := filepath.Glob("./templates/*.layout.tmpl")
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
 		if err != nil {
 			return myCache, err
 		}
