@@ -2,12 +2,12 @@ package render
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/justinas/nosurf"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/config"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/models"
 	"html/template"
-	"log"
 	"net/http"
 	"path/filepath"
 )
@@ -31,7 +31,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 }
 
 // RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) {
+func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
 	var tc map[string]*template.Template
 
 	if app.UseCache {
@@ -41,7 +41,7 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mod
 	}
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("could not get template from cache")
+		return errors.New("could not get template from cache")
 	}
 
 	buf := new(bytes.Buffer)
@@ -51,7 +51,9 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mod
 	_, err := buf.WriteTo(w)
 	if err != nil {
 		fmt.Println("error writing template to browser", err)
+		return err
 	}
+	return nil
 }
 
 // CreateTemplateCache creates a template cache as a map
@@ -91,7 +93,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		// does use a layout, we need to have it available to us before we add it
 		// to our template set
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob("./templates/*.layout.tmpl")
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
 			if err != nil {
 				return myCache, err
 			}
