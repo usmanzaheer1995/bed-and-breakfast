@@ -3,3 +3,4 @@
 coverage.out
 bed-and-breakfast
 *.exe
+database.yml
