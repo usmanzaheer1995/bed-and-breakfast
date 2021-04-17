@@ -6,3 +6,5 @@ create_table("users") {
   t.Column("password", "string", {"size": 60})
   t.Column("access_level", "integer", {"size": 1})
 }
+
+add_index("users", "email", {"unique": true})

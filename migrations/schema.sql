@@ -316,6 +316,13 @@ CREATE INDEX reservations_last_name_idx ON public.reservations USING btree (last
 
 
 --
+-- Name: room_restrictions_reservation_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX room_restrictions_reservation_id_idx ON public.room_restrictions USING btree (reservation_id);
+
+
+--
 -- Name: room_restrictions_room_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
