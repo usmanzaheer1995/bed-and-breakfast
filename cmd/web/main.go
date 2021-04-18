@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/config"
+	"github.com/usmanzaheer1995/bed-and-breakfast/internal/driver"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/handlers"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/helpers"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/models"
@@ -23,10 +24,12 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 func main() {
-	err := run()
+	db, err := run()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.SQL.Close()
+
 	fmt.Println(fmt.Sprintf("Starting application on port %s", PORT))
 
 	srv := &http.Server{
@@ -38,7 +41,7 @@ func main() {
 	log.Fatal(err)
 }
 
-func run() error {
+func run() (*driver.DB, error) {
 	// what am I going to put in the session
 	gob.Register(models.Reservation{})
 
@@ -59,18 +62,27 @@ func run() error {
 
 	app.Session = session
 
+	// connect to database
+	log.Println("connecting to database")
+	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bedandbreakfast user=postgres password=usman123")
+	if err != nil {
+		log.Fatal("cannot connect to database. Shutting down...")
+	}
+	log.Println("connected to database")
+
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
-		return err
+		log.Fatal("cannot create template cache")
+		return nil, err
 	}
 	app.TemplateCache = tc
 	app.UseCache = false
 
-	repo := handlers.NewRepo(&app)
+	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
 
 	render.NewTemplates(&app)
 	helpers.NewHelpers(&app)
 
-	return nil
+	return db, nil
 }

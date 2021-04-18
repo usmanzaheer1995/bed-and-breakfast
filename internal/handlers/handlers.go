@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/config"
+	"github.com/usmanzaheer1995/bed-and-breakfast/internal/driver"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/forms"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/helpers"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/models"
+	"github.com/usmanzaheer1995/bed-and-breakfast/internal/repository"
+	"github.com/usmanzaheer1995/bed-and-breakfast/internal/repository/dbrepo"
 	"net/http"
 
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/render"
@@ -18,12 +21,14 @@ var Repo *Repository
 // Repository is the repository type
 type Repository struct {
 	App *config.AppConfig
+	DB repository.DatabaseRepo
 }
 
 // NewRepo creates a new repository
-func NewRepo(a *config.AppConfig) *Repository {
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		DB: dbrepo.NewPostgresRepo(a, db.SQL),
 	}
 }
 
