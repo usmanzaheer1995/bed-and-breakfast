@@ -27,18 +27,18 @@ var theTests = []struct {
 	{"contact", "/contact", "GET", []postData{}, http.StatusOK},
 	{"mr", "/make-reservation", "GET", []postData{}, http.StatusOK},
 	{"post-search-avail", "/search-availability", "POST", []postData{
-		{ key: "start", value: "2020-01-01" },
-		{ key: "end", value: "2020-01-02" },
+		{key: "start", value: "2020-01-01"},
+		{key: "end", value: "2020-01-02"},
 	}, http.StatusOK},
 	{"post-search-avail-json", "/search-availability-json", "POST", []postData{
-		{ key: "start", value: "2020-01-01" },
-		{ key: "end", value: "2020-01-02" },
+		{key: "start", value: "2020-01-01"},
+		{key: "end", value: "2020-01-02"},
 	}, http.StatusOK},
 	{"make-reservation-post", "/make-reservation", "POST", []postData{
-		{ key: "first_name", value: "John" },
-		{ key: "last_name", value: "Doe" },
-		{ key: "email", value: "john@doe.com" },
-		{ key: "phone", value: "555-555-555" },
+		{key: "first_name", value: "John"},
+		{key: "last_name", value: "Doe"},
+		{key: "email", value: "john@doe.com"},
+		{key: "phone", value: "555-555-555"},
 	}, http.StatusOK},
 }
 
@@ -62,7 +62,7 @@ func TestHandlers(t *testing.T) {
 			for _, v := range e.params {
 				values.Add(v.key, v.value)
 			}
-			resp, err := ts.Client().PostForm(ts.URL + e.url, values)
+			resp, err := ts.Client().PostForm(ts.URL+e.url, values)
 			if err != nil {
 				t.Log(err)
 				t.Fatal(err)

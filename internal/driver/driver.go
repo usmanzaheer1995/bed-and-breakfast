@@ -18,7 +18,7 @@ var dbConn = &DB{}
 
 const (
 	maxOpenDBConn = 10
-	maxIdleConn = 5
+	maxIdleConn   = 5
 	maxDBLifetime = 5 * time.Minute
 )
 
