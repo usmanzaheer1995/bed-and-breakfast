@@ -70,7 +70,7 @@ func (m *postgresDBRepo) SearchAvailabilityByDatesByRoomID(start, end time.Time,
 			from
 				room_restrictions
 			where
-			    roomId = $1
+			    room_id = $1
 				and $2 < end_date and $3 > start_date;`
 
 	var numRows int
@@ -124,4 +124,27 @@ func (m *postgresDBRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]
 	}
 
 	return rooms, nil
+}
+
+// GetRoomByID gets a room by ID
+func (m *postgresDBRepo) GetRoomByID(id int) (models.Room, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var r models.Room
+	query := `
+		select id, room_name, created_at, updated_at from rooms where id=$1;
+	`
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&r.ID,
+		&r.RoomName,
+		&r.CreatedAt,
+		&r.UpdatedAt,
+	)
+	if err != nil {
+		return r, err
+	}
+
+	return r, nil
 }
