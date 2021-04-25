@@ -28,7 +28,6 @@ func TestMain(m *testing.M) {
 	// what am I going to put in the session
 	gob.Register(models.Reservation{})
 
-	// TODO: change this to true when in production
 	app.InProduction = false
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
