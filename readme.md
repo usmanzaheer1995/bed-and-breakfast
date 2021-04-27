@@ -8,4 +8,4 @@ This is the repository for my bed and breakfast project.
 - Uses [nosurf](https://github.com/justinas/nosurf) for CSRF 
 
 ## Testing
-- ` go test -coverprofile=coverage.out && go tool cover -html=coverage.out`
+- `go test -coverprofile=coverage.out && go tool cover -html=coverage.out`

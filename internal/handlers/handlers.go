@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/config"
 	"github.com/usmanzaheer1995/bed-and-breakfast/internal/driver"
@@ -80,7 +81,7 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		resp := jsonResponse{
-			OK: false,
+			OK:      false,
 			Message: "internal server error",
 		}
 		out, _ := json.MarshalIndent(resp, "", "    ")
@@ -100,7 +101,7 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 	available, err := m.DB.SearchAvailabilityByDatesByRoomID(startDate, endDate, roomID)
 	if err != nil {
 		resp := jsonResponse{
-			OK: false,
+			OK:      false,
 			Message: "error connecting to database",
 		}
 		out, _ := json.MarshalIndent(resp, "", "    ")
@@ -290,6 +291,37 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+
+	// send notifications - first to guest
+	htmlMsg := fmt.Sprintf(`
+		<strong>Reservation Confirmation</strong><br>
+		Dear %s, <br>
+		This is to confirm your reservation from %s to %s
+	`, reservation.FirstName, reservation.StartDate.Format("2006-01-02"), reservation.EndDate.Format("2006-01-02"))
+
+	msg := models.MailData{
+		To:      reservation.Email,
+		From:    "developer@bednbreakfast.com",
+		Subject: "Reservation Confirmation",
+		Content: htmlMsg,
+		Template: "basic.html",
+	}
+
+	m.App.MailChan <- msg
+
+	// send notifications - first to property owner
+	htmlMsg = fmt.Sprintf(`
+		<strong>Reservation Notification</strong><br>
+		A reservation has been made for %s from %s to %s
+	`, reservation.Room.RoomName, reservation.StartDate.Format("2006-01-02"), reservation.EndDate.Format("2006-01-02"))
+
+	msg = models.MailData{
+		To:      "me@here.com",
+		From:    "developer@bednbreakfast.com",
+		Subject: "Reservation Notification",
+		Content: htmlMsg,
+	}
+
 
 	m.App.Session.Put(r.Context(), "reservation", reservation)
 
