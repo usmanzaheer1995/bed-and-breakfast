@@ -301,10 +301,10 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	`, reservation.FirstName, reservation.StartDate.Format("2006-01-02"), reservation.EndDate.Format("2006-01-02"))
 
 	msg := models.MailData{
-		To:      reservation.Email,
-		From:    "developer@bednbreakfast.com",
-		Subject: "Reservation Confirmation",
-		Content: htmlMsg,
+		To:       reservation.Email,
+		From:     "developer@bednbreakfast.com",
+		Subject:  "Reservation Confirmation",
+		Content:  htmlMsg,
 		Template: "basic.html",
 	}
 
@@ -322,7 +322,6 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		Subject: "Reservation Notification",
 		Content: htmlMsg,
 	}
-
 
 	m.App.Session.Put(r.Context(), "reservation", reservation)
 
@@ -469,4 +468,27 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 
 func (m *Repository) AdminDashboard(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{})
+}
+
+func (m *Repository) AdminNewReservations(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin-new-reservations.page.tmpl", &models.TemplateData{})
+}
+
+func (m *Repository) AdminAllReservations(w http.ResponseWriter, r *http.Request) {
+	reservations, err := m.DB.AllReservations()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+
+	render.Template(w, r, "admin-all-reservations.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
+}
+
+func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin-reservations-calendar.page.tmpl", &models.TemplateData{})
 }
