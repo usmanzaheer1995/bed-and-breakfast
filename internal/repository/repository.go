@@ -17,4 +17,13 @@ type DatabaseRepo interface {
 	UpdateUser(u models.User) error
 	Authenticate(email, testPassword string) (int, string, error)
 	AllReservations() ([]models.Reservation, error)
+	AllNewReservations() ([]models.Reservation, error)
+	GetReservationByID(id int) (models.Reservation, error)
+	UpdateReservation(u models.Reservation) error
+	DeleteReservation(id int) error
+	UpdateProcessedReservation(id, processed int) error
+	AllRooms() ([]models.Room, error)
+	GetRestrictionsForRoomByDay(roomID int, startDate, endDate time.Time) ([]models.RoomRestriction, error)
+	InsertBlockForRoom(id int, startDate time.Time) error
+	DeleteBlockForRoom(id int) error
 }

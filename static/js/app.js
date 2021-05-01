@@ -75,16 +75,14 @@ function Prompt() {
             didOpen() {
                 if (c.didOpen) c.didOpen();
             },
-            preConfirm() {
-                return [
-                    document.getElementById('start').value,
-                    document.getElementById('end').value
-                ]
-            }
-        })
+        });
 
         if (result) {
             if (result.dismiss !== Swal.DismissReason.cancel) {
+                if (result === true) {
+                    if (c.callback !== undefined) c.callback(result);
+                    return;
+                }
                 if (!result.includes("")) {
                     if (c.callback !== undefined) c.callback(result);
                 }

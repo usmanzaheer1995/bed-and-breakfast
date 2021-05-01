@@ -67,3 +67,47 @@ func (t *testDBRepo) AllReservations() ([]models.Reservation, error) {
 
 	return reservations, nil
 }
+
+func (t *testDBRepo) AllNewReservations() ([]models.Reservation, error) {
+	var reservations []models.Reservation
+
+	return reservations, nil
+}
+
+func (t *testDBRepo) GetReservationByID(id int) (models.Reservation, error) {
+	var res models.Reservation
+
+	return res, nil
+}
+
+func (t *testDBRepo) UpdateReservation(u models.Reservation) error {
+	return nil
+}
+
+func (t *testDBRepo) DeleteReservation(id int) error {
+	return nil
+}
+
+func (t *testDBRepo) UpdateProcessedReservation(id, processed int) error {
+	return nil
+}
+
+func (t *testDBRepo) AllRooms() ([]models.Room, error) {
+	var rooms []models.Room
+
+	return rooms, nil
+}
+
+func (t *testDBRepo) GetRestrictionsForRoomByDay(roomID int, startDate, endDate time.Time) ([]models.RoomRestriction, error) {
+	var restrictions []models.RoomRestriction
+
+	return restrictions, nil
+}
+
+func (t *testDBRepo) InsertBlockForRoom(id int, startDate time.Time) error {
+	return nil
+}
+
+func (t *testDBRepo) DeleteBlockForRoom(id int) error {
+	return nil
+}
