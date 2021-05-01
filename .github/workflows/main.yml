@@ -28,4 +28,4 @@ jobs:
           script: |
             whoami
             cd /var/www/bedandbreakfast
-            ./update.sh
+            sudo ./update.sh
