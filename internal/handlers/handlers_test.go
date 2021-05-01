@@ -62,7 +62,7 @@ var postReservationTests = []struct {
 		{key: "phone", value: "123123456"},
 		{key: "room_id", value: "1"},
 		{key: "room_name", value: "General's Quarters"},
-	}, http.StatusTemporaryRedirect},
+	}, http.StatusSeeOther},
 	{"invalid-end-date", []postData{
 		{key: "start_date", value: "2050-01-01"},
 		{key: "end_date", value: "invalid"},
@@ -72,7 +72,7 @@ var postReservationTests = []struct {
 		{key: "phone", value: "123123456"},
 		{key: "room_id", value: "1"},
 		{key: "room_name", value: "General's Quarters"},
-	}, http.StatusTemporaryRedirect},
+	}, http.StatusSeeOther},
 	{"invalid-room-id", []postData{
 		{key: "start_date", value: "2050-01-01"},
 		{key: "end_date", value: "2050-01-02"},
@@ -82,17 +82,17 @@ var postReservationTests = []struct {
 		{key: "phone", value: "123123456"},
 		{key: "room_id", value: "invalid"},
 		{key: "room_name", value: "General's Quarters"},
-	}, http.StatusTemporaryRedirect},
+	}, http.StatusSeeOther},
 	{"invalid-data", []postData{
 		{key: "start_date", value: "2050-01-01"},
 		{key: "end_date", value: "2050-01-02"},
 		{key: "first_name", value: "a"},
-		{key: "last_name", value: "Smith"},
+		{key: "last_name", value: "s"},
 		{key: "email", value: "john@smith.com"},
 		{key: "phone", value: "123123456"},
 		{key: "room_id", value: "1"},
 		{key: "room_name", value: "General's Quarters"},
-	}, http.StatusSeeOther},
+	}, http.StatusOK},
 	{"failure-to-insert-reservation", []postData{
 		{key: "start_date", value: "2050-01-01"},
 		{key: "end_date", value: "2050-01-02"},

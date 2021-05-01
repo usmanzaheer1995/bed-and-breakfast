@@ -21,13 +21,23 @@ import (
 
 var app config.AppConfig
 var session *scs.SessionManager
-var pathToTemplates = "../../templates"
-var functions = template.FuncMap{}
+var pathToTemplates = "./../../templates"
+
+var functions = template.FuncMap{
+	"humanDate":  render.HumanDate,
+	"formatDate": render.FormatDate,
+	"iterate":    render.Iterate,
+	"add":        render.Add,
+}
 
 func TestMain(m *testing.M) {
-	// what am I going to put in the session
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
+	gob.Register(map[string]int{})
 
+	// change this to true when in production
 	app.InProduction = false
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -54,6 +64,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal("cannot create template cache")
 	}
+
 	app.TemplateCache = tc
 	app.UseCache = true
 
@@ -84,15 +95,31 @@ func getRoutes() http.Handler {
 	mux.Get("/generals-quarters", Repo.Generals)
 	mux.Get("/majors-suite", Repo.Majors)
 
-	mux.Get("/make-reservation", Repo.Reservation)
-	mux.Post("/make-reservation", Repo.PostReservation)
-	mux.Get("/reservation-summary", Repo.ReservationSummary)
-
 	mux.Get("/search-availability", Repo.Availability)
 	mux.Post("/search-availability", Repo.PostAvailability)
 	mux.Post("/search-availability-json", Repo.AvailabilityJSON)
 
 	mux.Get("/contact", Repo.Contact)
+
+	mux.Get("/make-reservation", Repo.Reservation)
+	mux.Post("/make-reservation", Repo.PostReservation)
+	mux.Get("/reservation-summary", Repo.ReservationSummary)
+
+	mux.Get("/user/login", Repo.ShowLogin)
+	mux.Post("/user/login", Repo.PostShowLogin)
+	mux.Get("/user/logout", Repo.Logout)
+
+	mux.Get("/admin/dashboard", Repo.AdminDashboard)
+
+	mux.Get("/admin/reservations-new", Repo.AdminNewReservations)
+	mux.Get("/admin/reservations-all", Repo.AdminAllReservations)
+	mux.Get("/admin/reservations-calendar", Repo.AdminReservationsCalendar)
+	mux.Post("/admin/reservations-calendar", Repo.AdminPostReservationsCalendar)
+	mux.Get("/admin/process-reservation/{src}/{id}/do", Repo.AdminProcessReservation)
+	mux.Get("/admin/delete-reservation/{src}/{id}/do", Repo.AdminDeleteReservation)
+
+	mux.Get("/admin/reservations/{src}/{id}/show", Repo.AdminShowReservation)
+	mux.Post("/admin/reservations/{src}/{id}", Repo.AdminPostShowReservation)
 
 	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
@@ -103,6 +130,7 @@ func getRoutes() http.Handler {
 // NoSurf adds CSRF protection to all POST requests
 func NoSurf(next http.Handler) http.Handler {
 	csrfHandler := nosurf.New(next)
+
 	csrfHandler.SetBaseCookie(http.Cookie{
 		HttpOnly: true,
 		Path:     "/",
@@ -119,53 +147,39 @@ func SessionLoad(next http.Handler) http.Handler {
 
 // CreateTestTemplateCache creates a template cache as a map
 func CreateTestTemplateCache() (map[string]*template.Template, error) {
-	myCache := make(map[string]*template.Template)
 
-	// this gets a list of all files ending with page.tmpl, and stores
-	// it in a slice of strings called pages
+	myCache := map[string]*template.Template{}
+
 	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplates))
 	if err != nil {
+		log.Println(err)
 		return myCache, err
 	}
 
-	// now we loop through the slice of strings, which has two
-	// entries: "home.page.tmpl" and "about.page.tmpl"
 	for _, page := range pages {
-		// the first time through, name = "home.page.tmpl"
 		name := filepath.Base(page)
 		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
 		if err != nil {
+			log.Println(err)
 			return myCache, err
 		}
 
-		// here, we are checking to see if there are any files at all that
-		// end with layout.tmpl. THere is only one, but if there were more
-		// than one, we we get them all and store them in a slice of strings
-		// named matches
 		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
 		if err != nil {
+			log.Println(err)
 			return myCache, err
 		}
 
-		// if the length of matches is > 0, we go through the slice
-		// and parse all of the layouts available to us. We might not use
-		// any of them in this iteration through the loop, but if the current
-		// template we are working on (home.page.tmpl the first time through)
-		// does use a layout, we need to have it available to us before we add it
-		// to our template set
 		if len(matches) > 0 {
 			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
 			if err != nil {
+				log.Println(err)
 				return myCache, err
 			}
 		}
 
-		// the first time through, name is still home.page.tmpl
-		// we never add anything with *.layout.tmpl to the template set;
-		// we just use the layout to create a page which depends on it.
-		// now, we add the template, complete any associated layouts, to our
-		// template set
 		myCache[name] = ts
 	}
+
 	return myCache, nil
 }
