@@ -203,3 +203,9 @@ jobs:
             cd /var/www/bedandbreakfast
             ./update.sh
 ```
+
+### Restrict access to your app port so it cannot be accessed except from your domain
+1. `sudo ufw status`
+1. `sudo ufw deny <port>/tcp`
+1. `sudo ufw enable`
+1. `sudo ufw status`
