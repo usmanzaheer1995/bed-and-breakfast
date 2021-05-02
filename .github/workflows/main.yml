@@ -27,4 +27,4 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd /var/www/bedandbreakfast
-            echo ${{ secrets.PASSWORD }} | sudo -S ./update.sh
+            ./update.sh
