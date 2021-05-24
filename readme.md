@@ -4,7 +4,7 @@ This is the repository for my bed and breakfast project.
 
 - Built in Go version 1.16.3
 - Uses [chi](https://github.com/go-chi/chi/v5) router
-- Uses [scs](https://github.com/alexedwards/scs/v2) for session management
+- Uses [scs](https://github.com/alexedwards/scs) for session management
 - Uses [nosurf](https://github.com/justinas/nosurf) for CSRF 
 
 ## Testing
@@ -72,7 +72,7 @@ This is the repository for my bed and breakfast project.
 1. `sudo mv Caddyfile Caddyfile.dist`
 1. `sudo vi Caddyfile`
 1. Paste in the following:
-   ```json
+   ```apacheconf
     {
         email usmanzaheer1995@gmail.com
     }
@@ -99,7 +99,7 @@ This is the repository for my bed and breakfast project.
 1. `sudo mkdir conf.d` -> `cd conf.d`
 1. `sudo vi bedandbreakfast.conf`
 1. Paste in the following (and update stuff where appropriate)
-   ```json
+   ```apacheconf
     <PUT ip/domain/subdomain HERE> {
         encode zstd gzip
         import static
@@ -126,7 +126,7 @@ This is the repository for my bed and breakfast project.
 1. `cd /etc/supervisor/conf.d`
 1. `sudo vi bedandbreakfast.conf`
 1. Paste in the following and (the command takes command line parameters):
-    ```json
+    ```apacheconf
     [program:bedandbreakfast]
     command=/var/www/bedandbreakfast/bedandbreakfast -dbname=bedandbreakfast -dbpass=Doranboots101$ -dbuser=postgres
     directory=/var/www/bedandbreakfast
@@ -149,7 +149,7 @@ This is the repository for my bed and breakfast project.
 1. `cd /var/www/bedandbreakfast`
 1. `vi update.sh`
 1. Paste in the following commands:
-```shell
+```bash
 #!/bin/bash
 
 git pull
@@ -171,7 +171,7 @@ sudo supervisorctl start bedandbreakfast
     - **NOTE**: Remove the leading slashes from the dollar signs
     - Add secrets from `Settings -> Secrets -> New repository secrets`
     - `Host` is the server IP
-```shell
+```yaml
 # This is a basic workflow to help you get started with Actions
 
 name: CI
